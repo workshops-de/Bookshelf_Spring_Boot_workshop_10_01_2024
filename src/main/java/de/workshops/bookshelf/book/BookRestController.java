@@ -1,12 +1,8 @@
 package de.workshops.bookshelf.book;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
@@ -29,40 +24,25 @@ import java.util.List;
 @RequestMapping("/book")
 @Validated
 public class BookRestController {
-    private final ObjectMapper mapper;
-    private final ResourceLoader resourceLoader;
+    private final BookService service;
 
-    private List<Book> books;
-
-    public BookRestController(ObjectMapper mapper, ResourceLoader resourceLoader) {
-        this.mapper = mapper;
-        this.resourceLoader = resourceLoader;
-    }
-
-    @PostConstruct
-    public void init() throws IOException {
-        final var resource = resourceLoader.getResource("classpath:books.json");
-        this.books = mapper.readValue(resource.getInputStream(), new TypeReference<>() {
-        });
+    public BookRestController(BookService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Book> getAllBooks() {
-        return books;
+        return service.getAllBooks();
     }
 
     @GetMapping(path = "/{isbn}")
     public Book getBookByIsbn(@PathVariable(name = "isbn") String isbnValue) throws BookException {
-        return books.stream()
-                .filter(book -> book.getIsbn().equals(isbnValue))
-                .findFirst().orElseThrow(() ->new BookException("Could not find book for ISBN"));
+        return service.getBookByIsbn(isbnValue);
     }
 
     @GetMapping(params = "author")
     public ResponseEntity<Book> getBookByAuthor(@RequestParam @NotBlank @Size(min = 3) String author) {
-        final var b = books.stream()
-                .filter(book -> book.getAuthor().contains(author))
-                .findFirst().orElse(null);
+        final var b = service.getBookByAuthor(author);
 
         if (b == null) {
             return ResponseEntity.noContent().build();
@@ -72,10 +52,7 @@ public class BookRestController {
 
     @PostMapping("/search")
     List<Book> searchBooks(@RequestBody @Valid BookSearchRequest bookSearchRequest) {
-        return books.stream()
-                .filter(book -> book.getAuthor().contains(bookSearchRequest.author())
-                                || book.getTitle().startsWith(bookSearchRequest.title()))
-                .toList();
+        return service.searchBooks(bookSearchRequest);
     }
 
     @ExceptionHandler(BookException.class)
