@@ -1,7 +1,6 @@
 package de.workshops.bookshelf.book;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -41,7 +40,7 @@ public class BookRestController {
     }
 
     @GetMapping(params = "author")
-    public ResponseEntity<Book> getBookByAuthor(@RequestParam @NotBlank @Size(min = 3) String author) {
+    public ResponseEntity<Book> getBookByAuthor(@RequestParam(required = false) @Size(min = 3) String author) {
         final var b = service.getBookByAuthor(author);
 
         if (b == null) {
@@ -53,6 +52,11 @@ public class BookRestController {
     @PostMapping("/search")
     List<Book> searchBooks(@RequestBody @Valid BookSearchRequest bookSearchRequest) {
         return service.searchBooks(bookSearchRequest);
+    }
+
+    @PostMapping
+    Book createBook(@RequestBody @Valid Book newBook) {
+        return service.createBook(newBook);
     }
 
     @ExceptionHandler(BookException.class)

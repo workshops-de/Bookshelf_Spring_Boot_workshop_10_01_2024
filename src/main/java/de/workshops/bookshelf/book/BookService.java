@@ -36,4 +36,7 @@ class BookService {
                 .toList();
     }
 
+    public Book createBook(Book newBook) {
+        return newBook;
+    }
 }
