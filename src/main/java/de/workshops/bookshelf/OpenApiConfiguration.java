@@ -5,21 +5,23 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("dev")
+//@Profile("dev")
 public class OpenApiConfiguration {
+//    @Autowired
+//    OpenAiProperties openAiProperties;
     @Bean
-    public OpenAPI api() {
+    public OpenAPI api(OpenAiProperties openAiProperties) {
         return new OpenAPI()
                 .info(
                         new Info()
-                                .title("Bookshelf API")
-                                .version("v0.0.1")
+                                .title(openAiProperties.getTitle())
+                                .version(openAiProperties.getVersion())
+                                .description("The capacity is %d books.".formatted(openAiProperties.getCapacity()))
                                 .license(new License()
-                                        .name("MIT License")
-                                        .url("https://opensource.org/licenses/MIT")
+                                        .name(openAiProperties.getLicense().getName())
+                                        .url(openAiProperties.getLicense().getUrl().toString())
                                 )
                 );
     }

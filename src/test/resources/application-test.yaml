@@ -4,12 +4,12 @@ application:
 
 spring:
   datasource:
-    url: jdbc:postgresql://roasted-tomato.db.elephantsql.com/db_trainer
-    driver-class-name: org.postgresql.Driver
-    username: trainer
-    password: pwTrainer
+    url: jdbc:h2:mem:bookshelf
+    driver-class-name: org.h2.Driver
+    username: birgit
+    password: gheim
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     open-in-view: false
     hibernate:
       ddl-auto: create-drop
