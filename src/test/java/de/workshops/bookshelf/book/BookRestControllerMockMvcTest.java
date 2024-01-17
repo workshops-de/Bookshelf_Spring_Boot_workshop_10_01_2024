@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Import(ObjectMapperTestConfiguration.class)
 @ActiveProfiles("test")
+@WithMockUser
 class BookRestControllerMockMvcTest {
 
     @Autowired
@@ -61,6 +63,7 @@ class BookRestControllerMockMvcTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldCreateNewBook() throws Exception {
         var isbn = "123456789";
         var title = "My first book";

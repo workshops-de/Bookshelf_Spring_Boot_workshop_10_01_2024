@@ -4,23 +4,32 @@ application:
 
 spring:
   datasource:
-    url: jdbc:postgresql://roasted-tomato.db.elephantsql.com/db_trainer
+    url: <please define>
     driver-class-name: org.postgresql.Driver
-    username: trainer
-    password: pwTrainer
+    username: <please define>
+    password: <please define>
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop
-    generate-ddl: true
-    defer-datasource-initialization: true
+      ddl-auto: validate
+    generate-ddl: false
+    defer-datasource-initialization: false
   h2:
     console:
       enabled: true
   sql:
     init:
       mode: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: when_authorized
 
 openai:
   title: 'Bookshelf API'

@@ -1,15 +1,20 @@
 package de.workshops.bookshelf.book;
 
+import de.workshops.bookshelf.SpringSecurityTestConfiguration;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +25,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(SpringSecurityTestConfiguration.class)
+@ActiveProfiles("test")
 class BookRestControllerRestClientTest {
 
     @LocalServerPort
@@ -32,8 +39,10 @@ class BookRestControllerRestClientTest {
 
     @PostConstruct
     void initRestClient() {
+        final var encodeToString = Base64.getEncoder().encodeToString("user:password".getBytes(StandardCharsets.UTF_8));
         restClient = RestClient.builder()
                 .baseUrl("http://localhost:%d/book".formatted(port))
+                .defaultHeader("Authorization", "Basic " + encodeToString)
                 .build();
     }
 
